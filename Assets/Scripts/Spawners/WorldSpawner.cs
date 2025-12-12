@@ -72,6 +72,7 @@ public class WorldSpawner : MonoBehaviour
         // Assign cameras
         playerCamera.SetTarget(playerInstance.transform);
         ghostCamera.SetTarget(ghostInstance.transform);
+        UIInputManager.Instance.SetPlayer(playerInstance.GetComponent<PlayerMovement>());
     }
 
 }

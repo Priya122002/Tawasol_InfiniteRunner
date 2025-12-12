@@ -17,11 +17,15 @@ public class PlayerMovement : MonoBehaviour
     private bool canMove = false;
     private bool isGrounded = false;
 
-    private bool jumpLocked = false;   // 🔥 prevents double-jump
+    private PlayerInput playerInput;   // 🔥 New Input System reference
+    private InputAction jumpAction;
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        playerInput = GetComponent<PlayerInput>();
+        jumpAction = playerInput.actions["Jump"];
         StartCoroutine(StartDelay());
     }
 
@@ -35,36 +39,52 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove) return;
 
-        // Always move forward (Z)
+        // Forward movement
         Vector3 vel = rb.linearVelocity;
         vel.z = forwardSpeed;
         rb.linearVelocity = vel;
 
-        // Ground check
-        isGrounded = Physics.CheckSphere(groundCheckPoint.position, checkRadius, groundLayer);
+        // ---- FIXED GROUND CHECK ----
+        Collider[] cols = Physics.OverlapSphere(groundCheckPoint.position, checkRadius, groundLayer);
 
-        // 🔥 When grounded → unlock jump
-        if (isGrounded)
-            jumpLocked = false;
+        isGrounded = false;
+
+        foreach (var c in cols)
+        {
+            if (c.transform != transform)   // ignore player's own collider
+            {
+                isGrounded = true;
+                break;
+            }
+        }
+
+        if (isGrounded && !jumpAction.enabled)
+            jumpAction.Enable();
+
+    }
+
+
+    public void OnJump(InputAction.CallbackContext ctx)
+    {
+        if (!ctx.performed) return;
+        Jump();
     }
 
     public void Jump()
     {
         if (!canMove) return;
         if (!isGrounded) return;
-        if (jumpLocked) return;   // 🔥 stop jump spam
-
-        jumpLocked = true;        // 🔥 lock jump until landing
-        isGrounded = false;
 
         Vector3 vel = rb.linearVelocity;
         vel.y = jumpForce;
         rb.linearVelocity = vel;
 
         Debug.Log("JUMP TRIGGERED");
+
+        jumpAction.Disable(); 
     }
 
-    // For ghost sync
+
     public bool IsJumping => !isGrounded;
     public Vector3 CurrentVelocity => rb.linearVelocity;
 }
