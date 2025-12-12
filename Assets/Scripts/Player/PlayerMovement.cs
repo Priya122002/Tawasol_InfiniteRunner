@@ -32,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Freeze rotation ONLY (never freeze X)
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
@@ -68,19 +67,27 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------------------------
-    // LANE MOVEMENT
+    // LANE MOVEMENT (PERFECT SMOOTH LIKE SUBWAY SURFERS)
     // ---------------------------
     void LaneMovement()
     {
-        float moveX = (targetX - rb.position.x) * laneChangeSpeed;
+        // Compute exact world X position for the lane
+        float targetLaneX = currentLane * laneOffset;
 
-        Vector3 vel = rb.velocity;
-        vel.x = moveX;
-        rb.velocity = vel;
+        // Smooth movement toward lane target
+        float newX = Mathf.MoveTowards(rb.position.x, targetLaneX, laneChangeSpeed * Time.fixedDeltaTime);
+
+        // Use MovePosition to avoid physics jitter
+        rb.MovePosition(new Vector3(
+            newX,
+            rb.position.y,
+            rb.position.z
+        ));
     }
 
+ 
     // ---------------------------
-    // KEYBOARD INPUT (OLD SYSTEM)
+    // KEYBOARD INPUT
     // ---------------------------
     void HandleKeyboardInput()
     {
@@ -92,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------------------------
-    // SWIPE INPUT (OLD SYSTEM)
+    // SWIPE INPUT
     // ---------------------------
     void HandleSwipeInput()
     {
@@ -124,11 +131,9 @@ public class PlayerMovement : MonoBehaviour
     // ---------------------------
     void ChangeLane(int direction)
     {
-        currentLane += direction;
-        currentLane = Mathf.Clamp(currentLane, -1, 1);
-
-        targetX = currentLane * laneOffset;
+        currentLane = Mathf.Clamp(currentLane + direction, -1, 1);
     }
+
 
     // ---------------------------
     // JUMP

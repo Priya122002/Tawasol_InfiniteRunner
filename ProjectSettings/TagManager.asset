@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Platform
+  - Obstacle2
+  - Obstacle1
+  - Obstacle3
+  - Obstacle4
+  - Obstacle
   layers:
   - Default
   - TransparentFX
