@@ -1,90 +1,164 @@
-﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float forwardSpeed = 8f;
-    public float jumpForce = 8f;
+    public float forwardSpeed = 10f;
+    public float jumpForce = 10f;
+
+    [Header("Lane Settings")]
+    public float laneOffset = 2.5f;
+    public float laneChangeSpeed = 12f;
 
     [Header("Ground Check")]
     public Transform groundCheckPoint;
-    public float checkRadius = 0.2f;
+    public float groundCheckDistance = 0.5f;
     public LayerMask groundLayer;
 
     private Rigidbody rb;
-    private bool canMove = false;
-    private bool isGrounded = false;
 
-    private PlayerInput playerInput;   // 🔥 New Input System reference
-    private InputAction jumpAction;
+    private bool isGrounded;
+    private bool jumpLocked;
+    public bool canMove = true;
 
+    private int currentLane = 0;     // -1 = left, 0 = middle, 1 = right
+    private float targetX = 0f;
 
-    void Start()
+    // Swipe
+    private bool isSwiping = false;
+    private Vector2 swipeStart;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        playerInput = GetComponent<PlayerInput>();
-        jumpAction = playerInput.actions["Jump"];
-        StartCoroutine(StartDelay());
+
+        // Freeze rotation ONLY (never freeze X)
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
-    IEnumerator StartDelay()
+    void Update()
     {
-        yield return new WaitForSeconds(0.25f);
-        canMove = true;
+        if (!canMove) return;
+
+        HandleKeyboardInput();
+        HandleSwipeInput();
+        GroundCheck();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            Jump();
     }
 
     void FixedUpdate()
     {
         if (!canMove) return;
 
-        // Forward movement
-        Vector3 vel = rb.linearVelocity;
-        vel.z = forwardSpeed;
-        rb.linearVelocity = vel;
-
-        // ---- FIXED GROUND CHECK ----
-        Collider[] cols = Physics.OverlapSphere(groundCheckPoint.position, checkRadius, groundLayer);
-
-        isGrounded = false;
-
-        foreach (var c in cols)
-        {
-            if (c.transform != transform)   // ignore player's own collider
-            {
-                isGrounded = true;
-                break;
-            }
-        }
-
-        if (isGrounded && !jumpAction.enabled)
-            jumpAction.Enable();
-
+        ForwardMovement();
+        LaneMovement();
     }
 
-
-    public void OnJump(InputAction.CallbackContext ctx)
+    // ---------------------------
+    // FORWARD MOVEMENT
+    // ---------------------------
+    void ForwardMovement()
     {
-        if (!ctx.performed) return;
-        Jump();
+        Vector3 vel = rb.velocity;
+        vel.z = forwardSpeed;
+        rb.velocity = vel;
     }
 
+    // ---------------------------
+    // LANE MOVEMENT
+    // ---------------------------
+    void LaneMovement()
+    {
+        float moveX = (targetX - rb.position.x) * laneChangeSpeed;
+
+        Vector3 vel = rb.velocity;
+        vel.x = moveX;
+        rb.velocity = vel;
+    }
+
+    // ---------------------------
+    // KEYBOARD INPUT (OLD SYSTEM)
+    // ---------------------------
+    void HandleKeyboardInput()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            ChangeLane(-1);
+
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            ChangeLane(+1);
+    }
+
+    // ---------------------------
+    // SWIPE INPUT (OLD SYSTEM)
+    // ---------------------------
+    void HandleSwipeInput()
+    {
+        if (Input.touchCount == 0) return;
+
+        Touch touch = Input.GetTouch(0);
+
+        if (touch.phase == TouchPhase.Began)
+        {
+            swipeStart = touch.position;
+            isSwiping = true;
+        }
+        else if (touch.phase == TouchPhase.Ended && isSwiping)
+        {
+            Vector2 delta = touch.position - swipeStart;
+
+            if (Mathf.Abs(delta.x) > 50f)
+            {
+                if (delta.x > 0) ChangeLane(+1);
+                else ChangeLane(-1);
+            }
+
+            isSwiping = false;
+        }
+    }
+
+    // ---------------------------
+    // CHANGE LANE
+    // ---------------------------
+    void ChangeLane(int direction)
+    {
+        currentLane += direction;
+        currentLane = Mathf.Clamp(currentLane, -1, 1);
+
+        targetX = currentLane * laneOffset;
+    }
+
+    // ---------------------------
+    // JUMP
+    // ---------------------------
     public void Jump()
     {
-        if (!canMove) return;
-        if (!isGrounded) return;
+        if (!isGrounded || jumpLocked) return;
 
-        Vector3 vel = rb.linearVelocity;
+        Vector3 vel = rb.velocity;
         vel.y = jumpForce;
-        rb.linearVelocity = vel;
+        rb.velocity = vel;
 
-        Debug.Log("JUMP TRIGGERED");
-
-        jumpAction.Disable(); 
+        jumpLocked = true;
     }
 
-
     public bool IsJumping => !isGrounded;
-    public Vector3 CurrentVelocity => rb.linearVelocity;
+
+    // ---------------------------
+    // GROUND CHECK
+    // ---------------------------
+    void GroundCheck()
+    {
+        isGrounded = Physics.Raycast(
+            groundCheckPoint.position,
+            Vector3.down,
+            groundCheckDistance,
+            groundLayer
+        );
+
+        if (isGrounded)
+            jumpLocked = false;
+    }
 }

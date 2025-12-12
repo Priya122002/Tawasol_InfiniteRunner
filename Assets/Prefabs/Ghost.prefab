@@ -104,7 +104,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235bc031ee540c74f81163ec7e503fc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostMovement
-  gravity: -20
+  targetX: 0
+  targetY: 0
+  targetZ: 0
+  smooth: 10
+  receivedJump: 0
 --- !u!114 &1919198964660649373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,8 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6c310fe02656948afcecb02961b030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateReceiver
-  networkDelay: 0.1
-  smooth: 12
+  ghost: {fileID: 3747861710464507489}
 --- !u!65 &3188426279106581395
 BoxCollider:
   m_ObjectHideFlags: 0

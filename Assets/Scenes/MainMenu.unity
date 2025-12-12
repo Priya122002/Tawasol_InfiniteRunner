@@ -149,11 +149,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectPooler
   pools:
-  - tag: Platform_Player
-    prefab: {fileID: 6198981871770355863, guid: 15f1ae3a8adeed04ca28010de63da7e3, type: 3}
+  - tag: FloorPlayer
+    addressKey: FloorPlayer
     size: 8
-  - tag: Platform_Ghost
-    prefab: {fileID: 6198981871770355863, guid: 78d078d5906b31346807391e8aa9fa22, type: 3}
+  - tag: FloorGhost
+    addressKey: FloorGhost
+    size: 8
+  - tag: Obstacle1
+    addressKey: Obstacle1
+    size: 8
+  - tag: Obstacle2
+    addressKey: Obstacle2
+    size: 8
+  - tag: Obstacle3
+    addressKey: Obstacle3
+    size: 8
+  - tag: Obstacle4
+    addressKey: Obstacle4
     size: 8
 --- !u!4 &207412391
 Transform:
@@ -598,8 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68db3cea813c2e54f812e477d4b3e03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldSpawner
-  playerPrefab: {fileID: 1347967510560694390, guid: 3fdb0faa91380a946bff2ba8db682686, type: 3}
-  ghostPrefab: {fileID: 8422224577649628769, guid: c7a486dd67123e4488952dd676b09131, type: 3}
+  playerKey: Player
+  ghostKey: Ghost
   playerSpawnPoint: {fileID: 1907639959}
   ghostSpawnPoint: {fileID: 1777984094}
   playerCamera: {fileID: 330585550}
@@ -729,10 +741,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8494e2de2352def44a595b96a9cf956c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InfinitePlatformManager
-  poolTag: Platform_Player
+  poolTag: FloorPlayer
   platformLength: 20
   initialSpawnCount: 5
   player: {fileID: 214779781353151575, guid: 3fdb0faa91380a946bff2ba8db682686, type: 3}
+  ghostWorldRoot: {fileID: 1204012691}
+  isPlayerWorld: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,10 +976,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8494e2de2352def44a595b96a9cf956c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InfinitePlatformManager
-  poolTag: Platform_Ghost
+  poolTag: FloorGhost
   platformLength: 20
   initialSpawnCount: 5
   player: {fileID: 314019594976887116, guid: c7a486dd67123e4488952dd676b09131, type: 3}
+  ghostWorldRoot: {fileID: 1204012691}
+  isPlayerWorld: 0
 --- !u!1 &991037478
 GameObject:
   m_ObjectHideFlags: 0

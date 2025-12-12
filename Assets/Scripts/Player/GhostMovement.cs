@@ -1,9 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GhostMovement : MonoBehaviour
 {
-    [HideInInspector] public float targetZ;
-    [HideInInspector] public float targetY;
+    public float targetX;
+    public float targetY;
+    public float targetZ;
 
     public float smooth = 12f;
 
@@ -11,13 +12,10 @@ public class GhostMovement : MonoBehaviour
     {
         Vector3 pos = transform.position;
 
-        // Follow Z smoothly
-        pos.z = Mathf.Lerp(pos.z, targetZ, smooth * Time.deltaTime);
-
-        // Follow Y exactly like the player (no gravity)
-        pos.y = Mathf.Lerp(pos.y, targetY, smooth * Time.deltaTime);
+        pos.x = Mathf.Lerp(pos.x, targetX, smooth * Time.deltaTime); // LEFT/RIGHT
+        pos.y = Mathf.Lerp(pos.y, targetY, smooth * Time.deltaTime); // JUMP
+        pos.z = Mathf.Lerp(pos.z, targetZ, smooth * Time.deltaTime); // FORWARD
 
         transform.position = pos;
     }
-
 }

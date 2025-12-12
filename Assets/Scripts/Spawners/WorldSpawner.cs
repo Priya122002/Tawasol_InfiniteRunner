@@ -1,78 +1,92 @@
 ﻿using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Collections;
 
 public class WorldSpawner : MonoBehaviour
 {
-    [Header("Prefabs")]
-    public GameObject playerPrefab;
-    public GameObject ghostPrefab;
+    [Header("Address Keys")]
+    public string playerKey = "Player";
+    public string ghostKey = "Ghost";
 
     [Header("Spawn Points")]
     public Transform playerSpawnPoint;
     public Transform ghostSpawnPoint;
 
+    [Header("Cameras")]
     public CameraFollow playerCamera;
     public CameraFollow ghostCamera;
+
+    [Header("Platform Managers (assign in Inspector)")]
+    public InfinitePlatformManager playerManager;
+    public InfinitePlatformManager ghostManager;
 
     private GameObject playerInstance;
     private GameObject ghostInstance;
 
-    public InfinitePlatformManager playerManager;
-    public InfinitePlatformManager ghostManager;
-
-    void Start()
+    private IEnumerator Start()
     {
-        StartCoroutine(SpawnAfterPlatforms());
+        // Wait until object pooler has at least started (optional)
+        yield return new WaitUntil(() =>
+            ObjectPooler.Instance != null &&
+            ObjectPooler.Instance.IsReady);
+
+        // Wait until both platform managers finish spawning terrain
+        yield return new WaitUntil(() =>
+            playerManager != null && ghostManager != null &&
+            playerManager.IsWorldReady && ghostManager.IsWorldReady);
+
+        // At this point entire terrain for both worlds is ready → spawn characters
+        yield return SpawnCharactersAsync();
     }
 
-    IEnumerator SpawnAfterPlatforms()
+    private IEnumerator SpawnCharactersAsync()
     {
-        // Wait until floor tiles exist
-        while (ObjectPooler.Instance.transform.childCount == 0)
-            yield return null;
-
-        SpawnCharacters();
-    }
-    void SpawnCharacters()
-    {
-        // --- Spawn Player ---
-        playerInstance = Instantiate(
-            playerPrefab,
+        // --- PLAYER ---
+        var pHandle = Addressables.InstantiateAsync(
+            playerKey,
             playerSpawnPoint.position,
             playerSpawnPoint.rotation,
-            playerSpawnPoint     // parent
+            playerSpawnPoint
         );
 
-        // Force X = 0 inside parent local space
-        playerInstance.transform.localPosition = new Vector3(
-            0f,
-            0.6f,     // height offset
-            0f
-        );
+        yield return pHandle;
+        playerInstance = pHandle.Result;
+        playerInstance.transform.localPosition = new Vector3(0f, 0.6f, 0f);
 
-        // --- Spawn Ghost ---
-        ghostInstance = Instantiate(
-            ghostPrefab,
+        // --- GHOST ---
+        var gHandle = Addressables.InstantiateAsync(
+            ghostKey,
             ghostSpawnPoint.position,
             ghostSpawnPoint.rotation,
-            ghostSpawnPoint     // parent
+            ghostSpawnPoint
         );
 
-        // Force X = 0 inside parent local space
-        ghostInstance.transform.localPosition = new Vector3(
-            0f,
-            0.6f,
-            0f
-        );
+        yield return gHandle;
+        ghostInstance = gHandle.Result;
+        ghostInstance.transform.localPosition = new Vector3(0f, 0.6f, 0f);
 
-        // Assign to managers
+        // Assign references to platform managers so recycling can use player z
         playerManager.player = playerInstance.transform;
         ghostManager.player = ghostInstance.transform;
 
-        // Assign cameras
+        // Set camera targets
         playerCamera.SetTarget(playerInstance.transform);
         ghostCamera.SetTarget(ghostInstance.transform);
-        UIInputManager.Instance.SetPlayer(playerInstance.GetComponent<PlayerMovement>());
-    }
 
+        // Register input manager if you have one
+        UIInputManager.Instance.SetPlayer(playerInstance.GetComponent<PlayerMovement>());
+
+        // Ensure player/ghost movement is disabled immediately
+        var pm = playerInstance.GetComponent<PlayerMovement>();
+        var gm = ghostInstance.GetComponent<PlayerMovement>();
+        if (pm != null) pm.canMove = false;
+        if (gm != null) gm.canMove = false;
+
+        // enable movement
+        if (pm != null) pm.canMove = true;
+        if (gm != null) gm.canMove = true;
+
+        Debug.Log("Movement enabled for player & ghost.");
+    }
 }

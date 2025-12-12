@@ -1,16 +1,16 @@
 [System.Serializable]
 public struct PlayerState
 {
-    public float z;      // forward progress
-    public float y;      // vertical jump height
-    public bool jumped;  // jump event
+    public float x;
+    public float y;
+    public float z;
     public float time;
 
-    public PlayerState(float _z, float _y, bool j, float t)
+    public PlayerState(float _x, float _y, float _z, float _time)
     {
-        z = _z;
+        x = _x;
         y = _y;
-        jumped = j;
-        time = t;
+        z = _z;
+        time = _time;
     }
 }

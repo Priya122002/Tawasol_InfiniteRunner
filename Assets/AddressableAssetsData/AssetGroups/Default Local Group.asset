@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: b87d616e9c4fb024c876b93cb9045284
   m_SerializeEntries:
+  - m_GUID: 0158c55fe0c076f4493897424ec23974
+    m_Address: Obstacle2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 15f1ae3a8adeed04ca28010de63da7e3
     m_Address: FloorPlayer
     m_ReadOnly: 0
@@ -25,6 +30,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4cd420e7779bd00479f9c0bb0b891df5
+    m_Address: Obstacle1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66cb4f34370c6164086df584c703c201
+    m_Address: Obstacle3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 78d078d5906b31346807391e8aa9fa22
     m_Address: FloorGhost
     m_ReadOnly: 0
@@ -32,6 +47,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c7a486dd67123e4488952dd676b09131
     m_Address: Ghost
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eddddc1b8a5382e41b8c8c8da4b2b15f
+    m_Address: Obstacle4
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
