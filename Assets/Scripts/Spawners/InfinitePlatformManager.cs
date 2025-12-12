@@ -5,33 +5,31 @@ using UnityEngine;
 public class InfinitePlatformManager : MonoBehaviour
 {
     [Header("Pool Settings")]
-    public string poolTag;                // FloorPlayer or FloorGhost
+    public string poolTag;
     public float platformLength = 20f;
     public int initialSpawnCount = 5;
 
-    [Header("Runtime References")]
-    public Transform player;              // Assigned by WorldSpawner
-    public Transform ghostWorldRoot;      // Offset X for ghost world
-    public bool isPlayerWorld = true;     // TRUE = Player, FALSE = Ghost
+    [Header("References")]
+    public Transform player;
+    public Transform ghostWorldRoot;
+    public bool isPlayerWorld = true;
 
     private float nextSpawnZ = 0f;
     private Queue<GameObject> activePlatforms = new Queue<GameObject>();
+
+    // ⭐ REQUIRED FOR OBSTACLE DEQUEUE
+    private Dictionary<GameObject, List<GameObject>> tileObstacles =
+        new Dictionary<GameObject, List<GameObject>>();
 
     public bool IsWorldReady { get; private set; } = false;
 
     IEnumerator Start()
     {
-        // Wait until ObjectPooler has loaded all addressables
-        yield return new WaitUntil(() =>
-            ObjectPooler.Instance != null &&
-            ObjectPooler.Instance.IsReady
-        );
+        yield return new WaitUntil(() => ObjectPooler.Instance != null && ObjectPooler.Instance.IsReady);
 
-        // Spawn initial floor tiles
         for (int i = 0; i < initialSpawnCount; i++)
             SpawnPlatform();
 
-        // small delay for physics settle
         yield return new WaitForSeconds(0.1f);
 
         IsWorldReady = true;
@@ -41,75 +39,83 @@ public class InfinitePlatformManager : MonoBehaviour
     {
         if (!IsWorldReady) return;
         if (player == null) return;
-        if (activePlatforms.Count == 0) return;
 
         GameObject firstTile = activePlatforms.Peek();
 
-        // When player passes platform → recycle
         if (player.position.z - firstTile.transform.position.z >= platformLength)
         {
             activePlatforms.Dequeue();
 
-            firstTile.transform.position = new Vector3(
-                transform.position.x,
-                0f,
-                nextSpawnZ
-            );
+            float newZ = nextSpawnZ;
 
-            // Spawn obstacles ONLY ON PLAYER WORLD
+            // ⭐ DESPAWN OBSTACLES BELONGING TO THIS TILE
+            ClearObstaclesOnTile(firstTile);
+
+            firstTile.transform.position = new Vector3(transform.position.x, 0f, newZ);
+
+            // ⭐ SPAWN NEW OBSTACLES IF PLAYER WORLD
             if (isPlayerWorld)
-                TrySpawnObstacleOnTile(firstTile);
+                SpawnObstaclesForTile(firstTile);
 
             activePlatforms.Enqueue(firstTile);
             nextSpawnZ += platformLength;
         }
     }
 
-    // Spawns a new platform tile + optional obstacle
-    private void SpawnPlatform()
+    void SpawnPlatform()
     {
-        GameObject obj = ObjectPooler.Instance.Spawn(
+        GameObject tile = ObjectPooler.Instance.Spawn(
             poolTag,
             new Vector3(transform.position.x, 0f, nextSpawnZ),
             Quaternion.identity
         );
 
-        // Spawn obstacles for first tiles ONLY if isPlayerWorld
-        if (isPlayerWorld)
-            TrySpawnObstacleOnTile(obj);
+        activePlatforms.Enqueue(tile);
 
-        activePlatforms.Enqueue(obj);
+        // ⭐ IMPORTANT: reset tile obstacle list
+        tileObstacles[tile] = new List<GameObject>();
+
+        if (isPlayerWorld)
+            SpawnObstaclesForTile(tile);
+
         nextSpawnZ += platformLength;
     }
 
-    // Main obstacle spawning logic
-    private void TrySpawnObstacleOnTile(GameObject tile)
+    // ⭐ THIS FUNCTION TRACKS AND SPAWNS OBSTACLES CORRECTLY
+    private void SpawnObstaclesForTile(GameObject tile)
     {
+        if (player.position.z < 10f) return; // wait until player actually runs
+
         ObstacleSpawner spawner = tile.GetComponent<ObstacleSpawner>();
+        if (spawner == null) return;
 
-        if (spawner == null)
+        if (spawner.TrySpawnObstacle(player, out string tag, out Vector3 pos))
         {
-            Debug.LogWarning("Tile missing ObstacleSpawner component!");
-            return;
-        }
+            // PLAYER OBSTACLE
+            GameObject obstacle = ObjectPooler.Instance.Spawn(tag, pos, Quaternion.identity);
+            tileObstacles[tile].Add(obstacle);
 
-        // Call ObstacleSpawner logic
-        if (spawner.TrySpawnObstacle(player, out string tag, out Vector3 spawnPos))
-        {
-            // Spawn obstacle in Player World
-            GameObject obstacle = ObjectPooler.Instance.Spawn(tag, spawnPos, Quaternion.identity);
-
-            // Spawn mirrored obstacle in Ghost World
+            // GHOST OBSTACLE
             if (ghostWorldRoot != null)
             {
-                Vector3 ghostPos = new Vector3(
-                    ghostWorldRoot.position.x,
-                    spawnPos.y,
-                    spawnPos.z
-                );
-
-                ObjectPooler.Instance.Spawn(tag, ghostPos, Quaternion.identity);
+                Vector3 ghostPos = new Vector3(ghostWorldRoot.position.x, pos.y, pos.z);
+                GameObject ghostObstacle = ObjectPooler.Instance.Spawn(tag, ghostPos, Quaternion.identity);
+                tileObstacles[tile].Add(ghostObstacle);
             }
         }
+    }
+
+    // ⭐ THIS FUNCTION DEQUEUES / DISABLES OBSTACLES
+    private void ClearObstaclesOnTile(GameObject tile)
+    {
+        if (!tileObstacles.ContainsKey(tile)) return;
+
+        foreach (GameObject o in tileObstacles[tile])
+        {
+            if (o != null)
+                o.SetActive(false); // return to pool
+        }
+
+        tileObstacles[tile].Clear(); // reset for next cycle
     }
 }
