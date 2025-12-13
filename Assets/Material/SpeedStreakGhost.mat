@@ -88,7 +88,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _CenterBoost: 1.859
+    - _CenterBoost: 0.347
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
@@ -98,12 +98,12 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _FlowSpeed: 5.69
+    - _FlowSpeed: 5.32
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Intensity: 0.596
-    - _LineDensity: 39.7
+    - _Intensity: 0.79
+    - _LineDensity: 28.1
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005

@@ -27,7 +27,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         if (isLoading) return;
-
+        SoundManager.Instance.Play("click");
         isLoading = true;
         Debug.Log("Start button clicked");
 
@@ -54,6 +54,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void ExitGame()
     {
+        SoundManager.Instance.Play("click");
         Application.Quit();
         Debug.Log("Game Quit");
     }

@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     private PlayerMovement player;
 
     [Header("Gameplay UI")]
-    public TextMeshProUGUI distanceText;
+  
     public TextMeshProUGUI orbText;
 
     [Header("Game Over UI")]
@@ -67,6 +67,7 @@ public class UIManager : MonoBehaviour
 
     public void JumpButton()
     {
+        SoundManager.Instance.Play("click");
         if (player != null)
             player.Jump();
     }
@@ -74,14 +75,14 @@ public class UIManager : MonoBehaviour
     {
         if (ScoreManager.Instance != null)
         {
-            distanceText.text = ScoreManager.Instance.DistanceInt.ToString();
+          
             orbText.text = ScoreManager.Instance.orbScore.ToString();
         }
     }
 
     public void ShowGameOver()
     {
-
+        SoundManager.Instance.Play("lost");
         gameOverPanel.SetActive(true);
         HideLifePopup();
         finalScoreText.text = "Final Score: " + ScoreManager.Instance.TotalScore;
@@ -101,6 +102,7 @@ public class UIManager : MonoBehaviour
     }
     public void ShowLifePopup(string msg)
     {
+        SoundManager.Instance.Play("popup");
         ChancelPanel.gameObject.SetActive(true);
         livesText.text = msg;
        

@@ -21,9 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public float speedIncreaseInterval = 10f;   // every 10 seconds
     public float speedBoostAmount = 2f;         // how much speed increases
 
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip jumpSound;
+   
 
     private Rigidbody rb;
     public bool canMove = true;
@@ -48,8 +46,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
+      
 
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -227,8 +224,7 @@ public class PlayerMovement : MonoBehaviour
         // extra height (one-frame only)
         rb.AddForce(Vector3.up * jumpExtraBoost, ForceMode.VelocityChange);
 
-        if (jumpSound != null && audioSource != null)
-            audioSource.PlayOneShot(jumpSound);
+        SoundManager.Instance.Play("jump");
 
         jumpLocked = true;
     }

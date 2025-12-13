@@ -6,7 +6,7 @@ public class GameRestartManager : MonoBehaviour
  
     public void RestartGame()
     {
-        // 1️⃣ Resume time
+        SoundManager.Instance.Play("click");
         Time.timeScale = 1f;
         ObstacleSpawner.ResetSpawner();
         ScoreManager.Instance?.ResetScore();
@@ -19,6 +19,7 @@ public class GameRestartManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        SoundManager.Instance.Play("click");
         Time.timeScale = 1f;
         ObstacleSpawner.ResetSpawner();
         ScoreManager.Instance?.ResetScore();
