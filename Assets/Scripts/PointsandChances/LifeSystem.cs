@@ -76,4 +76,10 @@ public class LifeSystem : MonoBehaviour
         UIManager.Instance.ShowGameOver();
         Time.timeScale = 0f;
     }
+    public void ResetLife()
+    {
+        currentLives = maxLives;
+        isProcessingHit = false;
+    }
+
 }

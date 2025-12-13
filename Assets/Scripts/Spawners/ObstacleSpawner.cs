@@ -53,5 +53,10 @@ public class ObstacleSpawner : MonoBehaviour
 
         return true;
     }
+    public static void ResetSpawner()
+    {
+        lastSpawnZ = -999f;
+    }
+
 
 }

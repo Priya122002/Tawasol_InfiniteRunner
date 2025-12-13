@@ -22,6 +22,11 @@ public class InfinitePlatformManager : MonoBehaviour
         new Dictionary<GameObject, List<GameObject>>();
 
     public bool IsWorldReady { get; private set; } = false;
+    void OnEnable()
+    {
+        GetComponent<ObstacleHit>()?.ResetHit();
+        GetComponent<ObstacleDissolve>()?.ResetDissolve();
+    }
 
     IEnumerator Start()
     {
@@ -143,6 +148,13 @@ public class InfinitePlatformManager : MonoBehaviour
         tileObstacles[tile].Add(orb);
     }
 
+    public void ResetWorld()
+    {
+        nextSpawnZ = 0f;
+        activePlatforms.Clear();
+        tileObstacles.Clear();
+        IsWorldReady = false;
+    }
 
 
 }

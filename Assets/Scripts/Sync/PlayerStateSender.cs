@@ -26,4 +26,11 @@ public class PlayerStateSender : MonoBehaviour
             writeIndex = (writeIndex + 1) % buffer.Length;
         }
     }
+    public static void ResetBuffer()
+    {
+        writeIndex = 0;
+        for (int i = 0; i < buffer.Length; i++)
+            buffer[i] = default;
+    }
+
 }

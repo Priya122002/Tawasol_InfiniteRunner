@@ -45,4 +45,12 @@ public class ScoreManager : MonoBehaviour
     {
         countingEnabled = false;
     }
+    public void ResetScore()
+    {
+        orbScore = 0;
+        distanceScore = 0;
+        countingEnabled = true;
+        player = null;
+    }
+
 }
