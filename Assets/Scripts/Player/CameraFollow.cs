@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -7,6 +7,10 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 offset;
     private bool initialized = false;
+
+    // ✅ Add this
+    [HideInInspector]
+    public Vector3 shakeOffset;
 
     public void SetTarget(Transform t)
     {
@@ -19,7 +23,11 @@ public class CameraFollow : MonoBehaviour
     {
         if (!initialized || target == null) return;
 
-        Vector3 desiredPos = target.position + offset;
-        transform.position = Vector3.Lerp(transform.position, desiredPos, smooth * Time.deltaTime);
+        Vector3 desiredPos = target.position + offset + shakeOffset;
+        transform.position = Vector3.Lerp(
+            transform.position,
+            desiredPos,
+            smooth * Time.deltaTime
+        );
     }
 }

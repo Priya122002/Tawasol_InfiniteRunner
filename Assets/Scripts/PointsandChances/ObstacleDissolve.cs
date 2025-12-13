@@ -11,6 +11,10 @@ public class ObstacleDissolve : MonoBehaviour
 
     private static readonly int DissolveID =
         Shader.PropertyToID("_DissolveAmount");
+    void OnEnable()
+    {
+        ResetDissolve();
+    }
 
     void Awake()
     {

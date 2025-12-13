@@ -441,10 +441,10 @@ RectTransform:
   - {fileID: 2006342411}
   m_Father: {fileID: 479595865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 505, y: -505.69818}
+  m_SizeDelta: {x: 910, y: 130.51376}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &190355000
 MonoBehaviour:
@@ -679,10 +679,10 @@ RectTransform:
   - {fileID: 52646746}
   m_Father: {fileID: 190354999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 210.22499, y: -65.25688}
+  m_SizeDelta: {x: 420.44998, y: 130.51376}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &315527992
 MonoBehaviour:
@@ -793,6 +793,7 @@ GameObject:
   - component: {fileID: 330585548}
   - component: {fileID: 330585550}
   - component: {fileID: 330585551}
+  - component: {fileID: 330585552}
   m_Layer: 8
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -1001,6 +1002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 214779781353151575, guid: 3fdb0faa91380a946bff2ba8db682686, type: 3}
   smooth: 5
+  shakeOffset: {x: 0, y: 0, z: 0}
 --- !u!81 &330585551
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1009,6 +1011,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
+--- !u!114 &330585552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5d53c9619dc53d4d81891c2d6ac4ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShake
 --- !u!1 &380443512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1763,10 +1777,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 479595865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 505, y: -376.53943}
+  m_SizeDelta: {x: 910, y: 127.803764}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &652328748
 MonoBehaviour:
@@ -2090,6 +2104,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LifeSystem
   maxLives: 3
+  playerCameraShake: {fileID: 330585552}
+  ghostCameraShake: {fileID: 1389100107}
   dissolveWaitTime: 1
 --- !u!1 &954630808
 GameObject:
@@ -2741,7 +2757,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1279896627
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2777,6 +2793,7 @@ GameObject:
   - component: {fileID: 1389100105}
   - component: {fileID: 1389100104}
   - component: {fileID: 1389100106}
+  - component: {fileID: 1389100107}
   m_Layer: 8
   m_Name: GhostCamera
   m_TagString: MainCamera
@@ -2965,8 +2982,8 @@ MonoBehaviour:
       colorBlindnessType: 0
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
-  m_ShowToolkit: 0
-  m_ShowCustomSorter: 0
+  m_ShowToolkit: 1
+  m_ShowCustomSorter: 1
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
@@ -2985,6 +3002,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 314019594976887116, guid: c7a486dd67123e4488952dd676b09131, type: 3}
   smooth: 5
+  shakeOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &1389100107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389100099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5d53c9619dc53d4d81891c2d6ac4ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShake
 --- !u!1 &1471940492
 GameObject:
   m_ObjectHideFlags: 0
@@ -3254,10 +3284,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 479595865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 505, y: -117.416885}
+  m_SizeDelta: {x: 910, y: 134.83377}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1497329446
 MonoBehaviour:
@@ -4237,10 +4267,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 479595865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 505, y: -248.73566}
+  m_SizeDelta: {x: 910, y: 127.803764}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1995936735
 MonoBehaviour:
@@ -4375,10 +4405,10 @@ RectTransform:
   - {fileID: 1497658220}
   m_Father: {fileID: 190354999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 699.77496, y: -65.25688}
+  m_SizeDelta: {x: 420.44998, y: 130.51376}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2006342412
 MonoBehaviour:

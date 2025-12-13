@@ -5,13 +5,21 @@ public class LifeSystem : MonoBehaviour
 {
     public static LifeSystem Instance;
 
+    [Header("Lives")]
     public int maxLives = 3;
     private int currentLives;
 
+    [Header("References")]
     private PlayerMovement player;
 
-    // must match ObstacleDissolve.dissolveDuration
+    // ✅ Explicit camera references
+    public CameraShake playerCameraShake;
+    public CameraShake ghostCameraShake;
+
+    [Header("Timing")]
     public float dissolveWaitTime = 1f;
+
+    private bool isProcessingHit = false;
 
     void Awake()
     {
@@ -26,44 +34,45 @@ public class LifeSystem : MonoBehaviour
 
     public void PlayerHit()
     {
-        Debug.Log("LifeSystem.PlayerHit() called");
+        if (isProcessingHit) return;
+        isProcessingHit = true;
 
         currentLives--;
-        Debug.Log("Lives left: " + currentLives);
-
         UIManager.Instance.UpdateLivesUI(currentLives);
 
         if (player == null)
         {
-            Debug.LogError("Player reference is NULL in LifeSystem!");
+            Debug.LogError("❌ Player not registered in LifeSystem");
             return;
         }
 
-        Debug.Log("Stopping player movement");
+        // ⛔ Stop player movement
         player.StopMovement();
 
+        // 🎥 One-time Y rotation hit wobble
+        if (playerCameraShake != null)
+            playerCameraShake.HitRotateY(2.5f, 0.25f);
+
+        if (ghostCameraShake != null)
+            ghostCameraShake.HitRotateY(2.5f, 0.25f);
+
+
         if (currentLives <= 0)
-        {
-            Debug.Log("GameOver coroutine started");
             StartCoroutine(GameOverAfterDissolve());
-        }
         else
-        {
-            Debug.Log("Resume coroutine started");
             StartCoroutine(ResumeAfterDissolve());
-        }
     }
 
     IEnumerator ResumeAfterDissolve()
     {
         yield return new WaitForSeconds(dissolveWaitTime);
         player.ResumeMovement();
+        isProcessingHit = false;
     }
 
     IEnumerator GameOverAfterDissolve()
     {
-        yield return new WaitForSeconds(dissolveWaitTime);
-
+        yield return new WaitForSecondsRealtime(dissolveWaitTime);
         UIManager.Instance.ShowGameOver();
         Time.timeScale = 0f;
     }
