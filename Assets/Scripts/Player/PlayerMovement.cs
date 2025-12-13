@@ -6,9 +6,13 @@ public class PlayerMovement : MonoBehaviour
     public float forwardSpeed = 10f;
     public float jumpForce = 10f;
 
+    [Header("Speed Increase")]
+    public float speedIncreaseRate = 0.1f;
+    public float maxSpeed = 25f;
+
     [Header("Lane Settings")]
-    public float laneOffset = 2.5f;
-    public float laneChangeSpeed = 12f;
+    public float laneOffset = 1.5f;
+    public float laneChangeSpeed = 10f;
 
     [Header("Ground Check")]
     public Transform groundCheckPoint;
@@ -16,21 +20,26 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundLayer;
 
     private Rigidbody rb;
-
     private bool isGrounded;
     private bool jumpLocked;
     public bool canMove = true;
 
-    private int currentLane = 0;     // -1 = left, 0 = middle, 1 = right
+    private int currentLane = 0;     // -1 left, 0 middle, 1 right
     private float targetX = 0f;
 
-    // Swipe
+    // Swipe handling
     private bool isSwiping = false;
     private Vector2 swipeStart;
-
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip jumpSound;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
 
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -46,6 +55,8 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
             Jump();
+
+        IncreaseSpeedOverTime();  // ⭐ NEW FEATURE
     }
 
     void FixedUpdate()
@@ -54,6 +65,17 @@ public class PlayerMovement : MonoBehaviour
 
         ForwardMovement();
         LaneMovement();
+    }
+
+    // ---------------------------
+    // SPEED INCREASE SYSTEM
+    // ---------------------------
+    void IncreaseSpeedOverTime()
+    {
+        forwardSpeed += speedIncreaseRate * Time.deltaTime;
+
+        if (forwardSpeed > maxSpeed)
+            forwardSpeed = maxSpeed;
     }
 
     // ---------------------------
@@ -67,17 +89,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------------------------
-    // LANE MOVEMENT (PERFECT SMOOTH LIKE SUBWAY SURFERS)
+    // LANE MOVEMENT
     // ---------------------------
     void LaneMovement()
     {
-        // Compute exact world X position for the lane
-        float targetLaneX = currentLane * laneOffset;
+        float newX = Mathf.MoveTowards(rb.position.x, targetX, laneChangeSpeed * Time.fixedDeltaTime);
 
-        // Smooth movement toward lane target
-        float newX = Mathf.MoveTowards(rb.position.x, targetLaneX, laneChangeSpeed * Time.fixedDeltaTime);
-
-        // Use MovePosition to avoid physics jitter
         rb.MovePosition(new Vector3(
             newX,
             rb.position.y,
@@ -85,9 +102,8 @@ public class PlayerMovement : MonoBehaviour
         ));
     }
 
- 
     // ---------------------------
-    // KEYBOARD INPUT
+    // INPUT
     // ---------------------------
     void HandleKeyboardInput()
     {
@@ -98,25 +114,22 @@ public class PlayerMovement : MonoBehaviour
             ChangeLane(+1);
     }
 
-    // ---------------------------
-    // SWIPE INPUT
-    // ---------------------------
     void HandleSwipeInput()
     {
         if (Input.touchCount == 0) return;
 
-        Touch touch = Input.GetTouch(0);
+        Touch t = Input.GetTouch(0);
 
-        if (touch.phase == TouchPhase.Began)
+        if (t.phase == TouchPhase.Began)
         {
-            swipeStart = touch.position;
+            swipeStart = t.position;
             isSwiping = true;
         }
-        else if (touch.phase == TouchPhase.Ended && isSwiping)
+        else if (t.phase == TouchPhase.Ended && isSwiping)
         {
-            Vector2 delta = touch.position - swipeStart;
+            Vector2 delta = t.position - swipeStart;
 
-            if (Mathf.Abs(delta.x) > 50f)
+            if (Mathf.Abs(delta.x) > 50)
             {
                 if (delta.x > 0) ChangeLane(+1);
                 else ChangeLane(-1);
@@ -126,14 +139,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ---------------------------
-    // CHANGE LANE
-    // ---------------------------
     void ChangeLane(int direction)
     {
         currentLane = Mathf.Clamp(currentLane + direction, -1, 1);
+        targetX = currentLane * laneOffset;
     }
-
 
     // ---------------------------
     // JUMP
@@ -145,7 +155,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 vel = rb.velocity;
         vel.y = jumpForce;
         rb.velocity = vel;
-
+        // 🔊 PLAY JUMP SOUND
+        if (jumpSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(jumpSound);
+        }
         jumpLocked = true;
     }
 

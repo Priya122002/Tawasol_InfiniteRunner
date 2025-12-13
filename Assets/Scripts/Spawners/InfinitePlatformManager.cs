@@ -56,6 +56,7 @@ public class InfinitePlatformManager : MonoBehaviour
             // ⭐ SPAWN NEW OBSTACLES IF PLAYER WORLD
             if (isPlayerWorld)
                 SpawnObstaclesForTile(firstTile);
+            SpawnOrb(firstTile);
 
             activePlatforms.Enqueue(firstTile);
             nextSpawnZ += platformLength;
@@ -105,7 +106,7 @@ public class InfinitePlatformManager : MonoBehaviour
         }
     }
 
-    // ⭐ THIS FUNCTION DEQUEUES / DISABLES OBSTACLES
+
     private void ClearObstaclesOnTile(GameObject tile)
     {
         if (!tileObstacles.ContainsKey(tile)) return;
@@ -118,4 +119,30 @@ public class InfinitePlatformManager : MonoBehaviour
 
         tileObstacles[tile].Clear(); // reset for next cycle
     }
+    private void SpawnOrb(GameObject tile)
+    {
+        if (player.position.z < 10f)
+            return;
+
+        if (Random.value > 0.30f)
+            return;
+
+        int lane = Random.Range(-1, 2);
+        float laneOffset = 1.5f;
+
+        float spawnZ = tile.transform.position.z +
+                       Random.Range(platformLength * 0.5f, platformLength - 2f);
+
+        Vector3 pos = new Vector3(
+            lane * laneOffset,
+            1.0f,
+            spawnZ
+        );
+
+        GameObject orb = ObjectPooler.Instance.Spawn("Orb", pos, Quaternion.identity);
+        tileObstacles[tile].Add(orb);
+    }
+
+
+
 }

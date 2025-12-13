@@ -6,8 +6,9 @@ public class ObstacleSpawner : MonoBehaviour
     public string[] obstacleTags;            // Pool tags: Obstacle1, Obstacle2, etc.
 
     [Header("Lane Settings")]
-    public float laneOffset = 2.5f;          // Distance between lanes (Left = -2.5, Mid = 0, Right = +2.5)
-    public float forwardOffset = 4f;         // Spawn obstacle slightly ahead on the tile
+    public float laneOffset = 1.5f;
+    public float forwardOffset = 4f;
+    public float obstacleY = 0.6f;   // Height of obstacle on floor
 
     [Header("Rules")]
     public float minSpawnDistance = 20f;     // Player must reach this Z before obstacles begin
@@ -15,10 +16,6 @@ public class ObstacleSpawner : MonoBehaviour
 
     private static float lastSpawnZ = -999f;
 
-    /// <summary>
-    /// Called from InfinitePlatformManager when a tile spawns.
-    /// Returns TRUE if obstacle should spawn.
-    /// </summary>
     public bool TrySpawnObstacle(Transform player, out string selectedTag, out Vector3 spawnPos)
     {
         selectedTag = "";
@@ -36,7 +33,6 @@ public class ObstacleSpawner : MonoBehaviour
 
         // 3. Random lane selection: -1 = Left, 0 = Middle, 1 = Right
         int laneIndex = Random.Range(-1, 2);
-
         float laneX = laneIndex * laneOffset;
 
         // 4. Choose obstacle randomly
@@ -45,13 +41,17 @@ public class ObstacleSpawner : MonoBehaviour
         // 5. Compute world space spawn position
         spawnPos = new Vector3(
             laneX,
-            0.5f,                                // Adjust for obstacle height
-            transform.position.z + forwardOffset // Slightly forward inside tile
+            obstacleY,
+            transform.position.z + forwardOffset
         );
+
+        // Safety clamp (never outside floor)
+        spawnPos.x = Mathf.Clamp(spawnPos.x, -laneOffset, laneOffset);
 
         // Record last spawn position
         lastSpawnZ = playerZ;
 
         return true;
     }
+
 }

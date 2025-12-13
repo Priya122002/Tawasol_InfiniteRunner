@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6252cf6e596dda6469a609e393c7586b, type: 2}
+  - {fileID: 2100000, guid: 93b592281d5cf0a4c8ec0891f88ddc04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,7 +108,6 @@ MonoBehaviour:
   targetY: 0
   targetZ: 0
   smooth: 10
-  receivedJump: 0
 --- !u!114 &1919198964660649373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6c310fe02656948afcecb02961b030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateReceiver
-  ghost: {fileID: 3747861710464507489}
+  networkDelay: 0.1
 --- !u!65 &3188426279106581395
 BoxCollider:
   m_ObjectHideFlags: 0

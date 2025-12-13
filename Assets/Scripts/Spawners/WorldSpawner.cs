@@ -75,7 +75,8 @@ public class WorldSpawner : MonoBehaviour
         ghostCamera.SetTarget(ghostInstance.transform);
 
         // Register input manager if you have one
-        UIInputManager.Instance.SetPlayer(playerInstance.GetComponent<PlayerMovement>());
+        UIManager.Instance.SetPlayer(playerInstance.GetComponent<PlayerMovement>());
+        ScoreManager.Instance.SetPlayer(playerInstance.transform);
 
         // Ensure player/ghost movement is disabled immediately
         var pm = playerInstance.GetComponent<PlayerMovement>();
