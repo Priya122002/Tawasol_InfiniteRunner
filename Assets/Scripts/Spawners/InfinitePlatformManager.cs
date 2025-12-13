@@ -17,7 +17,6 @@ public class InfinitePlatformManager : MonoBehaviour
     private float nextSpawnZ = 0f;
     private Queue<GameObject> activePlatforms = new Queue<GameObject>();
 
-    // ⭐ REQUIRED FOR OBSTACLE DEQUEUE
     private Dictionary<GameObject, List<GameObject>> tileObstacles =
         new Dictionary<GameObject, List<GameObject>>();
 
@@ -53,12 +52,10 @@ public class InfinitePlatformManager : MonoBehaviour
 
             float newZ = nextSpawnZ;
 
-            // ⭐ DESPAWN OBSTACLES BELONGING TO THIS TILE
             ClearObstaclesOnTile(firstTile);
 
             firstTile.transform.position = new Vector3(transform.position.x, 0f, newZ);
 
-            // ⭐ SPAWN NEW OBSTACLES IF PLAYER WORLD
             if (isPlayerWorld)
                 SpawnObstaclesForTile(firstTile);
             SpawnOrb(firstTile);
@@ -78,7 +75,6 @@ public class InfinitePlatformManager : MonoBehaviour
 
         activePlatforms.Enqueue(tile);
 
-        // ⭐ IMPORTANT: reset tile obstacle list
         tileObstacles[tile] = new List<GameObject>();
 
         if (isPlayerWorld)
@@ -87,21 +83,18 @@ public class InfinitePlatformManager : MonoBehaviour
         nextSpawnZ += platformLength;
     }
 
-    // ⭐ THIS FUNCTION TRACKS AND SPAWNS OBSTACLES CORRECTLY
     private void SpawnObstaclesForTile(GameObject tile)
     {
-        if (player.position.z < 10f) return; // wait until player actually runs
+        if (player.position.z < 10f) return;
 
         ObstacleSpawner spawner = tile.GetComponent<ObstacleSpawner>();
         if (spawner == null) return;
 
         if (spawner.TrySpawnObstacle(player, out string tag, out Vector3 pos))
         {
-            // PLAYER OBSTACLE
             GameObject obstacle = ObjectPooler.Instance.Spawn(tag, pos, Quaternion.identity);
             tileObstacles[tile].Add(obstacle);
 
-            // GHOST OBSTACLE
             if (ghostWorldRoot != null)
             {
                 Vector3 ghostPos = new Vector3(ghostWorldRoot.position.x, pos.y, pos.z);
@@ -119,10 +112,10 @@ public class InfinitePlatformManager : MonoBehaviour
         foreach (GameObject o in tileObstacles[tile])
         {
             if (o != null)
-                o.SetActive(false); // return to pool
+                o.SetActive(false); 
         }
 
-        tileObstacles[tile].Clear(); // reset for next cycle
+        tileObstacles[tile].Clear();
     }
     private void SpawnOrb(GameObject tile)
     {

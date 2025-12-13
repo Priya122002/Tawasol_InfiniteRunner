@@ -13,7 +13,6 @@ public class GameRestartManager : MonoBehaviour
         LifeSystem.Instance?.ResetLife();
         PlayerStateSender.ResetBuffer();
 
-        // 3️⃣ Reload scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

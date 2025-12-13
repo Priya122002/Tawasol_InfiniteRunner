@@ -5,9 +5,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float forwardSpeed = 10f;
     [Header("Jump Tuning")]
-    public float jumpForce = 5f;              // base force (keep)
-    public float jumpExtraBoost = 2.5f;       // height control
-    public float fallGravityMultiplier = 2f;  // makes landing fast
+    public float jumpForce = 5f;             
+    public float jumpExtraBoost = 2.5f;      
+    public float fallGravityMultiplier = 2f; 
 
 
     [Header("Speed Increase")]
@@ -18,15 +18,15 @@ public class PlayerMovement : MonoBehaviour
     public float laneChangeSpeed = 10f;
 
     [Header("Speed Interval Settings")]
-    public float speedIncreaseInterval = 10f;   // every 10 seconds
-    public float speedBoostAmount = 2f;         // how much speed increases
+    public float speedIncreaseInterval = 10f;   
+    public float speedBoostAmount = 2f;       
 
    
 
     private Rigidbody rb;
     public bool canMove = true;
 
-    private int currentLane = 0;     // -1 left, 0 middle, 1 right
+    private int currentLane = 0;    
     private float targetX = 0f;
 
     private float speedTimer = 0f;
@@ -36,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
     private int speedIncreaseCount = 0;
     private Vector2 swipeStartPos;
 
-    // ⭐ COLLISION BASED GROUND CHECK
     private int groundContacts = 0;
     private bool jumpLocked = false;
     [Header("Swipe Settings")]
@@ -103,7 +102,6 @@ public class PlayerMovement : MonoBehaviour
 
         speedIncreaseCount++;
 
-        // Show effect only every N times
         if (speedIncreaseCount % speedEffectEvery == 0)
         {
             UIManager.Instance?.ShowSpeedEffect();
@@ -136,9 +134,6 @@ public class PlayerMovement : MonoBehaviour
         ));
     }
 
-    // ---------------------------
-    // INPUT
-    // ---------------------------
     void HandleKeyboardInput()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
@@ -162,11 +157,9 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector2 swipeDelta = t.position - swipeStartPos;
 
-            // Ignore tiny swipes
             if (swipeDelta.magnitude < minSwipeDistance)
                 return;
 
-            // Horizontal swipe
             if (Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
             {
                 if (swipeDelta.x > 0)
@@ -174,7 +167,6 @@ public class PlayerMovement : MonoBehaviour
                 else
                     ChangeLane(-1);
             }
-            // Vertical swipe (UP = jump)
             else
             {
                 if (swipeDelta.y > 0)
@@ -198,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        rb.isKinematic = true;     // 🔒 HARD LOCK PHYSICS
+        rb.isKinematic = true;    
     }
 
     public void ResumeMovement()
@@ -215,13 +207,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (groundContacts == 0 || jumpLocked) return;
 
-        // reset vertical velocity
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        // base jump
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-        // extra height (one-frame only)
         rb.AddForce(Vector3.up * jumpExtraBoost, ForceMode.VelocityChange);
 
         SoundManager.Instance.Play("jump");

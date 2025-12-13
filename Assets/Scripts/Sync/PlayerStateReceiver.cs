@@ -18,11 +18,11 @@ public class PlayerStateReceiver : MonoBehaviour
     {
         int nextIndex = PlayerStateSender.writeIndex;
 
-        if (readIndex == nextIndex) return; // no new state
+        if (readIndex == nextIndex) return; 
 
         latest = PlayerStateSender.buffer[readIndex];
 
-        ghost.targetX = latest.x;   // THIS WAS MISSING
+        ghost.targetX = latest.x;  
         ghost.targetY = latest.y;
         ghost.targetZ = latest.z;
 

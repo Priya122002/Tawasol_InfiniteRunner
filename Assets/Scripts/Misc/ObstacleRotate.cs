@@ -13,7 +13,6 @@ public class ObstacleRotate : MonoBehaviour
     {
         zRotationDone = false;
 
-        // Reset rotation when reused from pool
         transform.localEulerAngles = Vector3.zero;
 
         rotateRoutine = StartCoroutine(RotateZThenX());
@@ -27,7 +26,6 @@ public class ObstacleRotate : MonoBehaviour
 
     IEnumerator RotateZThenX()
     {
-        // Step 1: Rotate Z → 90°
         while (!zRotationDone)
         {
             Vector3 euler = transform.localEulerAngles;
@@ -40,7 +38,6 @@ public class ObstacleRotate : MonoBehaviour
             yield return null;
         }
 
-        // Step 2: Continuous X-axis rotation
         while (true)
         {
             transform.Rotate(xRotationSpeed * Time.deltaTime, 0f, 0f, Space.Self);

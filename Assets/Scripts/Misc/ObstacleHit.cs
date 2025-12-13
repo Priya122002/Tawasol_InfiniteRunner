@@ -15,18 +15,14 @@ public class ObstacleHit : MonoBehaviour
 
             SoundManager.Instance.Play("damage");
            
-            // Damage player
             LifeSystem.Instance.PlayerHit();
 
-            // 🔥 Dissolve THIS obstacle
             GetComponent<ObstacleDissolve>()?.StartDissolve();
 
-            // Disable collider immediately
             GetComponent<Collider>().enabled = false;
         }
     }
 
-    // 🔁 Reset when reused from pool
     public void ResetHit()
     {
         hasHit = false;

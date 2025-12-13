@@ -12,7 +12,6 @@ public class LifeSystem : MonoBehaviour
     [Header("References")]
     private PlayerMovement player;
 
-    // ✅ Explicit camera references
     public CameraShake playerCameraShake;
     public CameraShake ghostCameraShake;
 
@@ -46,14 +45,11 @@ public class LifeSystem : MonoBehaviour
 
         if (player == null)
         {
-            Debug.LogError("❌ Player not registered in LifeSystem");
             return;
         }
 
-        // ⛔ Stop player movement
         player.StopMovement();
 
-        // 🎥 One-time Y rotation hit wobble
         if (playerCameraShake != null)
             playerCameraShake.HitRotateY(2.5f, 0.25f);
 

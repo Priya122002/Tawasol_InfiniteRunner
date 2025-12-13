@@ -19,7 +19,7 @@ public class ScoreManager : MonoBehaviour
     public void SetPlayer(Transform p)
     {
         player = p;
-        startZ = p.position.z;   // IMPORTANT — starting point
+        startZ = p.position.z;   
     }
 
     void Update()
@@ -28,7 +28,7 @@ public class ScoreManager : MonoBehaviour
         {
             distanceScore = (player.position.z - startZ) * 0.05f;
 
-            if (distanceScore < 0) distanceScore = 0;   // safety
+            if (distanceScore < 0) distanceScore = 0;  
         }
     }
 

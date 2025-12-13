@@ -11,9 +11,7 @@ public class CameraShake : MonoBehaviour
         originalRotation = transform.localRotation;
     }
 
-    /// <summary>
-    /// One-time Y rotation hit effect (rotate → return)
-    /// </summary>
+    
     public void HitRotateY(float angle, float duration)
     {
         if (shakeRoutine != null)
@@ -27,7 +25,6 @@ public class CameraShake : MonoBehaviour
         float half = duration * 0.5f;
         float t = 0f;
 
-        // 🔄 Rotate TO angle
         while (t < half)
         {
             float y = Mathf.Lerp(0f, angle, t / half);
@@ -38,7 +35,6 @@ public class CameraShake : MonoBehaviour
 
         t = 0f;
 
-        // 🔄 Rotate BACK to 0
         while (t < half)
         {
             float y = Mathf.Lerp(angle, 0f, t / half);

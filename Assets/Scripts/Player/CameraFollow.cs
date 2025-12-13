@@ -8,7 +8,6 @@ public class CameraFollow : MonoBehaviour
     private Vector3 offset;
     private bool initialized = false;
 
-    // ✅ Add this
     [HideInInspector]
     public Vector3 shakeOffset;
 

@@ -59,7 +59,6 @@
                 return o;
             }
 
-            // Glow function
             float Glow(float x, float center, float width, float smooth)
             {
                 float dist = abs(x - center);
@@ -70,21 +69,16 @@
             {
                 float2 uv = i.uv;
 
-                // LEFT PAIR
                 float L1 = Glow(uv.x, _LeftOffset - _LeftSpacing, _LineWidth, _Smoothness);
                 float L2 = Glow(uv.x, _LeftOffset + _LeftSpacing, _LineWidth, _Smoothness);
 
-                // RIGHT PAIR
                 float R1 = Glow(uv.x, _RightOffset - _RightSpacing, _LineWidth, _Smoothness);
                 float R2 = Glow(uv.x, _RightOffset + _RightSpacing, _LineWidth, _Smoothness);
 
-                // Combine lane glow
                 float lineGlow = (L1 + L2 + R1 + R2);
 
-                // Add inner fill glow (thicker appearance like cube)
                 float innerFill = pow(lineGlow, 2.0) * _FillIntensity;
 
-                // Vertical fade (bright near camera, dim in distance)
                 float horizon = lerp(1.0, 0.2, uv.y * _VerticalFade);
 
                 float totalGlow = (lineGlow * _GlowIntensity + innerFill) * horizon;

@@ -21,7 +21,6 @@ public class ObjectPooler : MonoBehaviour
 
     public bool IsReady { get; private set; } = false;
 
-    // Folder parents for organization
     private Transform floorsRoot;
     private Transform obstaclesRoot;
     private Transform coinsRoot;
@@ -34,7 +33,6 @@ public class ObjectPooler : MonoBehaviour
         else
             Destroy(gameObject);
 
-        // Create parent groups
         floorsRoot = new GameObject("Floors_Pool").transform;
         floorsRoot.SetParent(transform);
 
@@ -52,7 +50,6 @@ public class ObjectPooler : MonoBehaviour
     {
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
-        // Load each pool from Addressables
         foreach (Pool pool in pools)
         {
             poolDictionary.Add(pool.tag, new Queue<GameObject>());
@@ -67,7 +64,6 @@ public class ObjectPooler : MonoBehaviour
                 GameObject obj = handle.Result;
                 obj.SetActive(false);
 
-                // Assign correct parent folder
                 SetParentByTag(obj.transform, pool.tag);
 
                 poolDictionary[pool.tag].Enqueue(obj);
@@ -78,7 +74,6 @@ public class ObjectPooler : MonoBehaviour
         Debug.Log("ObjectPooler Loaded All Addressables.");
     }
 
-    // Assign object parent based on tag
     private void SetParentByTag(Transform obj, string tag)
     {
         if (tag.StartsWith("Floor"))
@@ -94,7 +89,6 @@ public class ObjectPooler : MonoBehaviour
             obj.SetParent(miscRoot);
     }
 
-    // Main spawn function
     public GameObject Spawn(string tag, Vector3 position, Quaternion rotation)
     {
         if (!poolDictionary.ContainsKey(tag))
@@ -109,7 +103,7 @@ public class ObjectPooler : MonoBehaviour
         obj.transform.rotation = rotation;
         obj.SetActive(true);
 
-        poolDictionary[tag].Enqueue(obj); // Recycled only when manually disabled
+        poolDictionary[tag].Enqueue(obj); 
 
         return obj;
     }

@@ -61,18 +61,10 @@
 
             half4 frag (Varyings i) : SV_Target
             {
-                // -------------------------
-                // FILL COLOR (GRADIENT)
-                // -------------------------
-
                 float fillLerp = i.uv.y;
                 float3 fillBase = lerp(_ColorBottom.rgb, _ColorTop.rgb, fillLerp);
 
                 float3 fillGlow = fillBase * _FillIntensity;
-
-                // -------------------------
-                // OUTLINE DETECTION
-                // -------------------------
 
                 float edgeX = min(i.uv.x, 1 - i.uv.x);
                 float edgeY = min(i.uv.y, 1 - i.uv.y);
@@ -82,10 +74,6 @@
                 float outline = smoothstep(_EdgeThickness, 0.0, edgeDist);
 
                 float3 borderGlow = _EdgeColor.rgb * outline * _EdgeIntensity;
-
-                // -------------------------
-                // FINAL COLOR (Additive)
-                // -------------------------
 
                 float3 finalColor = fillGlow + borderGlow;
 

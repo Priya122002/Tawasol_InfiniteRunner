@@ -6,17 +6,16 @@ using System.Collections;
 public class MainMenuManager : MonoBehaviour
 {
     [Header("UI")]
-    public GameObject loadingPanel;   // Parent object of progress bar
-    public Image progressFill;        // Filled Image
+    public GameObject loadingPanel;   
+    public Image progressFill;       
 
     [Header("Settings")]
-    public float fillSpeed = 1.2f;    // Speed of progress fill
+    public float fillSpeed = 1.2f;    
 
     bool isLoading = false;
 
     void Start()
     {
-        // Ensure clean state
         if (loadingPanel != null)
             loadingPanel.SetActive(false);
 
@@ -39,14 +38,12 @@ public class MainMenuManager : MonoBehaviour
 
     IEnumerator LoadGameRoutine()
     {
-        // Fake loading bar (smooth & controllable)
         while (progressFill.fillAmount < 1f)
         {
             progressFill.fillAmount += Time.deltaTime * fillSpeed;
             yield return null;
         }
 
-        // Small delay for polish
         yield return new WaitForSeconds(0.2f);
 
         SceneManager.LoadScene("GameScene");

@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
        
 
         CancelInvoke(nameof(HideLifePopup));
-        Invoke(nameof(HideLifePopup), 2f);   // Hide after 2 sec
+        Invoke(nameof(HideLifePopup), 2f);  
     }
 
     void HideLifePopup()
@@ -117,10 +117,8 @@ public class UIManager : MonoBehaviour
     }
     public void FlyCoinToUI(Vector3 worldPos, int amount)
     {
-        // Convert world position to screen position
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
-        // Spawn UI coin
         GameObject coin = Instantiate(uiCoinFlyPrefab, mainCanvas.transform);
         RectTransform rt = coin.GetComponent<RectTransform>();
         rt.position = screenPos;
@@ -140,14 +138,12 @@ public class UIManager : MonoBehaviour
         {
             t += Time.deltaTime / duration;
 
-            // Smooth curve motion
             float height = Mathf.Sin(t * Mathf.PI) * 80f;
             coin.position = Vector3.Lerp(start, end, t) + Vector3.up * height;
 
             yield return null;
         }
 
-        // Finalize
         ScoreManager.Instance.AddOrb(amount);
         Destroy(coin.gameObject);
     }

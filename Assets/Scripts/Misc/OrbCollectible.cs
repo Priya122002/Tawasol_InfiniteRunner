@@ -26,18 +26,16 @@ public class OrbCollectible : MonoBehaviour
         collected = true;
 
         SoundManager.Instance.Play("collect coin");
-        // Play burst FX
+       
         if (burstFX != null)
         {
             burstFX.gameObject.SetActive(true);
             burstFX.Play();
         }
 
-        // Hide orb visuals + collider
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
 
-        // Fly coin to UI + add score at end
         UIManager.Instance.FlyCoinToUI(transform.position, points);
 
         StartCoroutine(DisableAfterFX());
@@ -53,7 +51,6 @@ public class OrbCollectible : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    // 🔁 For pooling reuse
     public void ResetOrb()
     {
         collected = false;

@@ -17,9 +17,9 @@ public class PlayerStateSender : MonoBehaviour
             timer = 0f;
 
             buffer[writeIndex] = new PlayerState(
-                transform.position.x,   // lane
-                transform.position.y,   // jump
-                transform.position.z,   // forward
+                transform.position.x,  
+                transform.position.y,  
+                transform.position.z,  
                 Time.time
             );
 

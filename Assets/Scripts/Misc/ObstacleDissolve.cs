@@ -4,7 +4,7 @@ using System.Collections;
 public class ObstacleDissolve : MonoBehaviour
 {
     [Header("Dissolve Settings")]
-    public float dissolveDuration = 4f;   // ✅ 4 seconds dissolve
+    public float dissolveDuration = 4f; 
 
     private Material[] mats;
     private bool isDissolving = false;
@@ -18,7 +18,7 @@ public class ObstacleDissolve : MonoBehaviour
 
     void Awake()
     {
-        // Works for parent OR child renderers
+        
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
 
         if (renderers == null || renderers.Length == 0)
@@ -31,7 +31,7 @@ public class ObstacleDissolve : MonoBehaviour
 
         for (int i = 0; i < renderers.Length; i++)
         {
-            mats[i] = renderers[i].material; // instance material
+            mats[i] = renderers[i].material; 
             mats[i].SetFloat(DissolveID, 0f);
         }
     }
@@ -66,11 +66,9 @@ public class ObstacleDissolve : MonoBehaviour
         foreach (var mat in mats)
             mat.SetFloat(DissolveID, 1f);
 
-        // Disable obstacle AFTER dissolve fully finishes
         gameObject.SetActive(false);
     }
 
-    // 🔁 Pooling reuse
     public void ResetDissolve()
     {
         isDissolving = false;

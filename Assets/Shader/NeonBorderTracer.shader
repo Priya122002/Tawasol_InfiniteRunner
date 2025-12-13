@@ -45,7 +45,6 @@
                 return o;
             }
 
-            // Uniform border mask (same thickness everywhere)
             float BorderMask(float2 uv)
             {
                 float2 d = min(uv, 1.0 - uv);

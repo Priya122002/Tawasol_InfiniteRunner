@@ -10,7 +10,7 @@
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
-        Blend One One    // Additive glow
+        Blend One One  
         ZWrite Off
         Cull Off
 
@@ -45,7 +45,6 @@
                 return o;
             }
 
-            // Perfect uniformly thick border
             float borderMask(float2 uv, float thickness)
             {
                 float left   = step(uv.x, thickness);

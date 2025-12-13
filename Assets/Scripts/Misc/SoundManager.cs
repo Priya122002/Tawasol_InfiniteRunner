@@ -33,6 +33,5 @@ public class SoundManager : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("Sound not found: " + clipName);
     }
 }

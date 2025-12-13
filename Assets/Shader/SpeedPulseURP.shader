@@ -52,7 +52,7 @@
             {
                 Varyings o;
                 o.positionHCS = TransformObjectToHClip(v.positionOS.xyz);
-                o.uv = v.uv - 0.5;   // Centered UV
+                o.uv = v.uv - 0.5;   
                 return o;
             }
 
@@ -61,21 +61,17 @@
                 float2 uv = i.uv;
                 float dist = length(uv);
 
-                // Direction from center
                 float2 dir = normalize(uv + 0.0001);
 
-                // Radial speed lines (center → outward)
                 float flow =
                     sin(dot(dir, float2(1, 0)) * _LineDensity
                     + _Time.y * _FlowSpeed);
 
                 flow = saturate(flow);
 
-                // Stronger in center
                 float centerFade = 1.0 - smoothstep(0.0, 0.7, dist);
                 centerFade = pow(centerFade, 1.5) * _CenterBoost;
 
-                // Fade near edges
                 float edgeFade = smoothstep(0.1, 0.8, dist);
 
                 float alpha =
