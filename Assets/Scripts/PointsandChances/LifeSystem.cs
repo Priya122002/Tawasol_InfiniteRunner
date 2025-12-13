@@ -1,64 +1,70 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using System.Collections;
 
 public class LifeSystem : MonoBehaviour
 {
     public static LifeSystem Instance;
 
     public int maxLives = 3;
-    public int currentLives;
+    private int currentLives;
+
+    private PlayerMovement player;
+
+    // must match ObstacleDissolve.dissolveDuration
+    public float dissolveWaitTime = 1f;
 
     void Awake()
     {
         Instance = this;
+        currentLives = maxLives;
     }
 
-    void Start()
+    public void RegisterPlayer(PlayerMovement p)
     {
-        currentLives = maxLives;
-        UIManager.Instance.UpdateLivesUI(currentLives);
+        player = p;
     }
 
     public void PlayerHit()
     {
-        currentLives--;
+        Debug.Log("LifeSystem.PlayerHit() called");
 
-        if (currentLives > 0)
+        currentLives--;
+        Debug.Log("Lives left: " + currentLives);
+
+        UIManager.Instance.UpdateLivesUI(currentLives);
+
+        if (player == null)
         {
-            UIManager.Instance.ShowLifePopup(currentLives + " chances left");
+            Debug.LogError("Player reference is NULL in LifeSystem!");
+            return;
         }
+
+        Debug.Log("Stopping player movement");
+        player.StopMovement();
 
         if (currentLives <= 0)
         {
-            UIManager.Instance.ShowLifePopup("No chances left!");
-            GameOver();
+            Debug.Log("GameOver coroutine started");
+            StartCoroutine(GameOverAfterDissolve());
+        }
+        else
+        {
+            Debug.Log("Resume coroutine started");
+            StartCoroutine(ResumeAfterDissolve());
         }
     }
 
-    void GameOver()
+    IEnumerator ResumeAfterDissolve()
     {
-        // Freeze game completely
-        Time.timeScale = 0f;
+        yield return new WaitForSeconds(dissolveWaitTime);
+        player.ResumeMovement();
+    }
 
-        // Stop player movement
-        PlayerMovement pm = FindObjectOfType<PlayerMovement>();
-        if (pm != null) pm.canMove = false;
+    IEnumerator GameOverAfterDissolve()
+    {
+        yield return new WaitForSeconds(dissolveWaitTime);
 
-        // Stop scoring
-        ScoreManager.Instance.StopScoring();
-
-        // Show Game Over UI
         UIManager.Instance.ShowGameOver();
-    }
-    public void RestartGame()
-    {
-        // Freeze game completely
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("GameScene");
-    }
-    public void LoadMainMenuScene()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        Time.timeScale = 0f;
     }
 }

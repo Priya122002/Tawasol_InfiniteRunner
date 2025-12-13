@@ -32,10 +32,17 @@ public class PlayerMovement : MonoBehaviour
     private float targetX = 0f;
 
     private float speedTimer = 0f;
+    [Header("Speed Effect Control")]
+    public int speedEffectEvery = 5;
+
+    private int speedIncreaseCount = 0;
+    private Vector2 swipeStartPos;
 
     // ⭐ COLLISION BASED GROUND CHECK
     private int groundContacts = 0;
     private bool jumpLocked = false;
+    [Header("Swipe Settings")]
+    public float minSwipeDistance = 50f;
 
     void Awake()
     {
@@ -97,8 +104,15 @@ public class PlayerMovement : MonoBehaviour
         if (forwardSpeed > maxSpeed)
             forwardSpeed = maxSpeed;
 
-        UIManager.Instance?.ShowSpeedEffect();
+        speedIncreaseCount++;
+
+        // Show effect only every N times
+        if (speedIncreaseCount % speedEffectEvery == 0)
+        {
+            UIManager.Instance?.ShowSpeedEffect();
+        }
     }
+
 
     void ForwardMovement()
     {
@@ -145,25 +159,60 @@ public class PlayerMovement : MonoBehaviour
 
         if (t.phase == TouchPhase.Began)
         {
-            // nothing needed here
+            swipeStartPos = t.position;
         }
         else if (t.phase == TouchPhase.Ended)
         {
-            Vector2 delta = t.deltaPosition;
+            Vector2 swipeDelta = t.position - swipeStartPos;
 
-            if (Mathf.Abs(delta.x) > 50)
+            // Ignore tiny swipes
+            if (swipeDelta.magnitude < minSwipeDistance)
+                return;
+
+            // Horizontal swipe
+            if (Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
             {
-                if (delta.x > 0) ChangeLane(+1);
-                else ChangeLane(-1);
+                if (swipeDelta.x > 0)
+                    ChangeLane(+1);
+                else
+                    ChangeLane(-1);
+            }
+            // Vertical swipe (UP = jump)
+            else
+            {
+                if (swipeDelta.y > 0)
+                    Jump();
             }
         }
     }
+
 
     void ChangeLane(int direction)
     {
         currentLane = Mathf.Clamp(currentLane + direction, -1, 1);
         targetX = currentLane * laneOffset;
     }
+    public void StopMovement()
+    {
+        Debug.Log("PLAYER HARD STOP");
+
+        canMove = false;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        rb.isKinematic = true;     // 🔒 HARD LOCK PHYSICS
+    }
+
+    public void ResumeMovement()
+    {
+        Debug.Log("PLAYER RESUME");
+
+        rb.isKinematic = false;
+        canMove = true;
+    }
+
+
 
     public void Jump()
     {

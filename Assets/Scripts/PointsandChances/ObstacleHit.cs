@@ -1,8 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ObstacleHit : MonoBehaviour
 {
-    private bool hasHit = false;   // Prevents multiple hits
+    private bool hasHit = false;
+
+    [Header("Hit Sound")]
+    public AudioSource audioSource;
+    public AudioClip hitSound;
+
+    void Awake()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -12,19 +22,25 @@ public class ObstacleHit : MonoBehaviour
         {
             hasHit = true;
 
-            // Damage the player
+            // 🔊 Play hit sound once
+            if (audioSource != null && hitSound != null)
+                audioSource.PlayOneShot(hitSound);
+
+            // Damage player
             LifeSystem.Instance.PlayerHit();
 
-            // Trigger dissolve effect
+            // 🔥 Dissolve THIS obstacle
             GetComponent<ObstacleDissolve>()?.StartDissolve();
 
-            // Optional: disable collider
+            // Disable collider immediately
             GetComponent<Collider>().enabled = false;
         }
     }
 
-    void ResetHit()
+    // 🔁 Reset when reused from pool
+    public void ResetHit()
     {
         hasHit = false;
+        GetComponent<Collider>().enabled = true;
     }
 }
