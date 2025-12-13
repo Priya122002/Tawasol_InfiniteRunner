@@ -123,7 +123,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1347967510560694390}
   serializedVersion: 5
-  m_Mass: 5
+  m_Mass: 2
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -155,7 +155,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   forwardSpeed: 8
-  jumpForce: 10
+  jumpForce: 5
+  jumpExtraBoost: 4
+  fallGravityMultiplier: 2
   maxSpeed: 25
   laneOffset: 1.5
   laneChangeSpeed: 10

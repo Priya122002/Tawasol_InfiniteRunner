@@ -4,7 +4,11 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float forwardSpeed = 10f;
-    public float jumpForce = 10f;
+    [Header("Jump Tuning")]
+    public float jumpForce = 5f;              // base force (keep)
+    public float jumpExtraBoost = 2.5f;       // height control
+    public float fallGravityMultiplier = 2f;  // makes landing fast
+
 
     [Header("Speed Increase")]
     public float maxSpeed = 25f;
@@ -44,7 +48,14 @@ public class PlayerMovement : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.useGravity = true;
     }
+    void FixedUpdate()
+    {
+        if (!canMove) return;
 
+        ForwardMovement();
+        LaneMovement();
+        ApplyBetterGravity();
+    }
     void Update()
     {
         if (!canMove) return;
@@ -57,17 +68,18 @@ public class PlayerMovement : MonoBehaviour
             Jump();
     }
 
-    void FixedUpdate()
+    void ApplyBetterGravity()
     {
-        if (!canMove) return;
-
-        ForwardMovement();
-        LaneMovement();
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector3.up * Physics.gravity.y *
+                           fallGravityMultiplier * Time.fixedDeltaTime;
+        }
     }
 
-    // ---------------------------
-    // SPEED INTERVAL
-    // ---------------------------
+  
+
+
     void HandleSpeedInterval()
     {
         speedTimer += Time.deltaTime;
@@ -88,9 +100,6 @@ public class PlayerMovement : MonoBehaviour
         UIManager.Instance?.ShowSpeedEffect();
     }
 
-    // ---------------------------
-    // MOVEMENT
-    // ---------------------------
     void ForwardMovement()
     {
         rb.velocity = new Vector3(
@@ -99,6 +108,7 @@ public class PlayerMovement : MonoBehaviour
             forwardSpeed
         );
     }
+
 
     void LaneMovement()
     {
@@ -155,18 +165,18 @@ public class PlayerMovement : MonoBehaviour
         targetX = currentLane * laneOffset;
     }
 
-    // ---------------------------
-    // JUMP (COLLISION BASED)
-    // ---------------------------
     public void Jump()
     {
         if (groundContacts == 0 || jumpLocked) return;
 
-        rb.velocity = new Vector3(
-            rb.velocity.x,
-            jumpForce,
-            rb.velocity.z
-        );
+        // reset vertical velocity
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        // base jump
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+        // extra height (one-frame only)
+        rb.AddForce(Vector3.up * jumpExtraBoost, ForceMode.VelocityChange);
 
         if (jumpSound != null && audioSource != null)
             audioSource.PlayOneShot(jumpSound);
@@ -174,9 +184,6 @@ public class PlayerMovement : MonoBehaviour
         jumpLocked = true;
     }
 
-    // ---------------------------
-    // COLLISION GROUND DETECTION
-    // ---------------------------
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
@@ -185,7 +192,14 @@ public class PlayerMovement : MonoBehaviour
             jumpLocked = false;
         }
     }
-
+    void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
+        {
+            if (rb.velocity.y < 0)
+                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        }
+    }
     void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))

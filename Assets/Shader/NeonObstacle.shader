@@ -17,6 +17,8 @@
 
         Pass
         {
+            Cull Off   // ✅ FRONT + BACK visible
+
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag

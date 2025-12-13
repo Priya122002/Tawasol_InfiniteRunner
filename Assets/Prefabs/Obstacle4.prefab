@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5607049026952538315}
   - component: {fileID: -5262611509795941893}
-  - component: {fileID: 4274675618221445505}
   - component: {fileID: 1774997871706553477}
   - component: {fileID: 6024532731719026845}
   - component: {fileID: 4243908905736187410}
@@ -49,20 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ac19a18ce204f44fb167232c230c699, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleHit
---- !u!114 &4274675618221445505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8931937872792426294}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9daf1a16f3af3649bece561c9376980, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObstacleDissolve
-  mat: {fileID: 2100000, guid: 5aea9ada74388a8449b521ba9e353595, type: 2}
-  dissolveSpeed: 1
 --- !u!33 &1774997871706553477
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -96,7 +81,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 61af552283aaefe4e8d02be4aafbfc24, type: 2}
+  - {fileID: 2100000, guid: d424b5eb2a01a6e4ea1f5bb88f555c8c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -153,4 +138,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleRotate
   zRotationSpeed: 180
-  yRotationSpeed: 60
+  xRotationSpeed: 90
