@@ -24,6 +24,14 @@ public class UIManager : MonoBehaviour
     public RectTransform coinTargetUI;  
     public GameObject uiCoinFlyPrefab;
     public Canvas mainCanvas;
+
+    [Header("Speed Effect UI")]
+    public GameObject playerSpeedEffectUI;
+    public GameObject ghostSpeedEffectUI;
+    public float speedEffectDuration = 3f;
+
+    private Coroutine speedRoutine;
+
     void Awake()
     {
         Instance = this;
@@ -32,6 +40,29 @@ public class UIManager : MonoBehaviour
     public void SetPlayer(PlayerMovement p)
     {
         player = p;
+    }
+    public void ShowSpeedEffect()
+    {
+        if (speedRoutine != null)
+            StopCoroutine(speedRoutine);
+
+        speedRoutine = StartCoroutine(SpeedEffectRoutine());
+    }
+    IEnumerator SpeedEffectRoutine()
+    {
+        if (playerSpeedEffectUI != null)
+            playerSpeedEffectUI.SetActive(true);
+
+        if (ghostSpeedEffectUI != null)
+            ghostSpeedEffectUI.SetActive(true);
+
+        yield return new WaitForSeconds(speedEffectDuration);
+
+        if (playerSpeedEffectUI != null)
+            playerSpeedEffectUI.SetActive(false);
+
+        if (ghostSpeedEffectUI != null)
+            ghostSpeedEffectUI.SetActive(false);
     }
 
     public void JumpButton()

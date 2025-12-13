@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4295025299382645920}
   - component: {fileID: 7968240379753935288}
   - component: {fileID: 4382198795939679621}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -35,8 +35,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8655336883233788269}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &717827294281191942
@@ -156,22 +155,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   forwardSpeed: 8
-  jumpForce: 12
-  speedIncreaseRate: 0.1
+  jumpForce: 10
   maxSpeed: 25
   laneOffset: 1.5
   laneChangeSpeed: 10
-  groundCheckPoint: {fileID: 8655336883233788269}
-  groundCheckDistance: 0.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  airForwardMultiplier: 0.35
-  canMove: 0
-  lowJumpMultiplier: 1.8
-  fallMultiplier: 3.5
+  speedIncreaseInterval: 10
+  speedBoostAmount: 2
   audioSource: {fileID: 4382198795939679621}
   jumpSound: {fileID: 8300000, guid: 98f89bd6185f98f46ac0ecca08d4b30a, type: 3}
+  canMove: 0
 --- !u!114 &7968240379753935288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,34 +274,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &6328401667164166515
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8655336883233788269}
-  m_Layer: 6
-  m_Name: GroundCheck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8655336883233788269
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6328401667164166515}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.473, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 214779781353151575}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

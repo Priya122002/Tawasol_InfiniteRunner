@@ -7,42 +7,42 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 10f;
 
     [Header("Speed Increase")]
-    public float speedIncreaseRate = 0.1f;
     public float maxSpeed = 25f;
 
     [Header("Lane Settings")]
     public float laneOffset = 1.5f;
     public float laneChangeSpeed = 10f;
 
-    [Header("Ground Check")]
-    public Transform groundCheckPoint;
-    public float groundCheckDistance = 0.5f;
-    public LayerMask groundLayer;
+    [Header("Speed Interval Settings")]
+    public float speedIncreaseInterval = 10f;   // every 10 seconds
+    public float speedBoostAmount = 2f;         // how much speed increases
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip jumpSound;
 
     private Rigidbody rb;
-    private bool isGrounded;
-    private bool jumpLocked;
     public bool canMove = true;
 
     private int currentLane = 0;     // -1 left, 0 middle, 1 right
     private float targetX = 0f;
 
-    // Swipe handling
-    private bool isSwiping = false;
-    private Vector2 swipeStart;
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip jumpSound;
+    private float speedTimer = 0f;
+
+    // ⭐ COLLISION BASED GROUND CHECK
+    private int groundContacts = 0;
+    private bool jumpLocked = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         if (audioSource == null)
-        {
             audioSource = GetComponent<AudioSource>();
-        }
 
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.useGravity = true;
     }
 
     void Update()
@@ -51,12 +51,10 @@ public class PlayerMovement : MonoBehaviour
 
         HandleKeyboardInput();
         HandleSwipeInput();
-        GroundCheck();
+        HandleSpeedInterval();
 
         if (Input.GetKeyDown(KeyCode.Space))
             Jump();
-
-        IncreaseSpeedOverTime();  // ⭐ NEW FEATURE
     }
 
     void FixedUpdate()
@@ -68,32 +66,47 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------------------------
-    // SPEED INCREASE SYSTEM
+    // SPEED INTERVAL
     // ---------------------------
-    void IncreaseSpeedOverTime()
+    void HandleSpeedInterval()
     {
-        forwardSpeed += speedIncreaseRate * Time.deltaTime;
+        speedTimer += Time.deltaTime;
 
+        if (speedTimer >= speedIncreaseInterval)
+        {
+            speedTimer = 0f;
+            IncreaseSpeed();
+        }
+    }
+
+    void IncreaseSpeed()
+    {
+        forwardSpeed += speedBoostAmount;
         if (forwardSpeed > maxSpeed)
             forwardSpeed = maxSpeed;
+
+        UIManager.Instance?.ShowSpeedEffect();
     }
 
     // ---------------------------
-    // FORWARD MOVEMENT
+    // MOVEMENT
     // ---------------------------
     void ForwardMovement()
     {
-        Vector3 vel = rb.velocity;
-        vel.z = forwardSpeed;
-        rb.velocity = vel;
+        rb.velocity = new Vector3(
+            rb.velocity.x,
+            rb.velocity.y,
+            forwardSpeed
+        );
     }
 
-    // ---------------------------
-    // LANE MOVEMENT
-    // ---------------------------
     void LaneMovement()
     {
-        float newX = Mathf.MoveTowards(rb.position.x, targetX, laneChangeSpeed * Time.fixedDeltaTime);
+        float newX = Mathf.MoveTowards(
+            rb.position.x,
+            targetX,
+            laneChangeSpeed * Time.fixedDeltaTime
+        );
 
         rb.MovePosition(new Vector3(
             newX,
@@ -122,20 +135,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (t.phase == TouchPhase.Began)
         {
-            swipeStart = t.position;
-            isSwiping = true;
+            // nothing needed here
         }
-        else if (t.phase == TouchPhase.Ended && isSwiping)
+        else if (t.phase == TouchPhase.Ended)
         {
-            Vector2 delta = t.position - swipeStart;
+            Vector2 delta = t.deltaPosition;
 
             if (Mathf.Abs(delta.x) > 50)
             {
                 if (delta.x > 0) ChangeLane(+1);
                 else ChangeLane(-1);
             }
-
-            isSwiping = false;
         }
     }
 
@@ -146,38 +156,43 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // ---------------------------
-    // JUMP
+    // JUMP (COLLISION BASED)
     // ---------------------------
     public void Jump()
     {
-        if (!isGrounded || jumpLocked) return;
+        if (groundContacts == 0 || jumpLocked) return;
 
-        Vector3 vel = rb.velocity;
-        vel.y = jumpForce;
-        rb.velocity = vel;
-        // 🔊 PLAY JUMP SOUND
+        rb.velocity = new Vector3(
+            rb.velocity.x,
+            jumpForce,
+            rb.velocity.z
+        );
+
         if (jumpSound != null && audioSource != null)
-        {
             audioSource.PlayOneShot(jumpSound);
-        }
+
         jumpLocked = true;
     }
 
-    public bool IsJumping => !isGrounded;
-
     // ---------------------------
-    // GROUND CHECK
+    // COLLISION GROUND DETECTION
     // ---------------------------
-    void GroundCheck()
+    void OnCollisionEnter(Collision collision)
     {
-        isGrounded = Physics.Raycast(
-            groundCheckPoint.position,
-            Vector3.down,
-            groundCheckDistance,
-            groundLayer
-        );
-
-        if (isGrounded)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
+        {
+            groundContacts++;
             jumpLocked = false;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
+        {
+            groundContacts--;
+            if (groundContacts < 0)
+                groundContacts = 0;
+        }
     }
 }
