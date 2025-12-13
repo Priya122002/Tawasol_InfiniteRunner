@@ -55,10 +55,29 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove) return;
 
-        ForwardMovement();
-        LaneMovement();
-        ApplyBetterGravity();
+        Vector3 targetPos = rb.position;
+
+        // Forward movement
+        targetPos.z += forwardSpeed * Time.fixedDeltaTime;
+
+        // Lane movement
+        targetPos.x = Mathf.MoveTowards(
+            rb.position.x,
+            targetX,
+            laneChangeSpeed * Time.fixedDeltaTime
+        );
+
+        rb.MovePosition(new Vector3(
+            targetPos.x,
+            rb.position.y,
+            targetPos.z
+        ));
+
+      
+
     }
+
+
     void Update()
     {
         if (!canMove) return;
@@ -70,18 +89,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             Jump();
     }
-
-    void ApplyBetterGravity()
-    {
-        if (rb.velocity.y < 0)
-        {
-            rb.velocity += Vector3.up * Physics.gravity.y *
-                           fallGravityMultiplier * Time.fixedDeltaTime;
-        }
-    }
-
-  
-
+ 
 
     void HandleSpeedInterval()
     {
@@ -106,32 +114,6 @@ public class PlayerMovement : MonoBehaviour
         {
             UIManager.Instance?.ShowSpeedEffect();
         }
-    }
-
-
-    void ForwardMovement()
-    {
-        rb.velocity = new Vector3(
-            rb.velocity.x,
-            rb.velocity.y,
-            forwardSpeed
-        );
-    }
-
-
-    void LaneMovement()
-    {
-        float newX = Mathf.MoveTowards(
-            rb.position.x,
-            targetX,
-            laneChangeSpeed * Time.fixedDeltaTime
-        );
-
-        rb.MovePosition(new Vector3(
-            newX,
-            rb.position.y,
-            rb.position.z
-        ));
     }
 
     void HandleKeyboardInput()
@@ -202,21 +184,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-
     public void Jump()
     {
         if (groundContacts == 0 || jumpLocked) return;
 
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.velocity = new Vector3(0f, 0f, 0f); // reset Y only
 
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
         rb.AddForce(Vector3.up * jumpExtraBoost, ForceMode.VelocityChange);
-
-        SoundManager.Instance.Play("jump");
 
         jumpLocked = true;
     }
+
 
     void OnCollisionEnter(Collision collision)
     {
@@ -230,10 +209,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
         {
-            if (rb.velocity.y < 0)
-                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+          
         }
     }
+
+
     void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("PlayerWorld"))
