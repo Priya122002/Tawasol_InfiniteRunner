@@ -81,8 +81,9 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver()
     {
-        gameOverPanel.SetActive(true);
 
+        gameOverPanel.SetActive(true);
+        HideLifePopup();
         finalScoreText.text = "Final Score: " + ScoreManager.Instance.TotalScore;
         finalDistanceText.text = "Distance: " + ScoreManager.Instance.DistanceInt;
         finalOrbText.text = "Orbs: " + ScoreManager.Instance.orbScore;

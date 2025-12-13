@@ -38,6 +38,10 @@ public class LifeSystem : MonoBehaviour
         isProcessingHit = true;
 
         currentLives--;
+        if (currentLives > 0)
+            UIManager.Instance.ShowLifePopup(currentLives + " chance left");
+        else
+            UIManager.Instance.ShowLifePopup("No chances left!");
         UIManager.Instance.UpdateLivesUI(currentLives);
 
         if (player == null)
